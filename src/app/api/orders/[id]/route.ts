@@ -8,8 +8,6 @@ type RouteContext = {
 };
 
 export async function PATCH(request: Request, { params }: RouteContext) {
-
-  const db = getDb();
   try {
     const { id } = await params;
     const body = await request.json();
@@ -22,6 +20,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
         { status: 400 }
       );
     }
+
+    const db = getDb();
 
     const result = await db.query(
       `

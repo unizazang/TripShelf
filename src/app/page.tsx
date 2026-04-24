@@ -47,7 +47,7 @@ export default async function HomePage() {
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
                   href="/trips/new"
-                  className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                  className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold !text-white transition hover:bg-slate-800"
                 >
                   새 여행 만들기
                 </Link>
