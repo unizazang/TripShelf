@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import type { TripEntry } from "@/types/entry";
 import type { OrderWithTrip } from "@/types/order";
 
@@ -10,8 +10,8 @@ type OrderRow = {
   theme: "basic" | "photo" | "diary";
   include_scope: "all";
   status: "pending" | "processing" | "completed";
-  created_at: string;
-  updated_at: string;
+  created_at: string | Date;
+  updated_at: string | Date;
   trip_title: string;
   trip_destination: string;
 };
@@ -24,30 +24,46 @@ type OrderExportRow = {
   theme: "basic" | "photo" | "diary";
   include_scope: "all";
   status: "pending" | "processing" | "completed";
-  created_at: string;
-  updated_at: string;
+  created_at: string | Date;
+  updated_at: string | Date;
   trip_real_id: string;
   trip_title: string;
   trip_destination: string;
-  start_date: string;
-  end_date: string;
+  start_date: string | Date;
+  end_date: string | Date;
   description: string | null;
   cover_image_url: string | null;
-  trip_created_at: string;
-  trip_updated_at: string;
+  trip_created_at: string | Date;
+  trip_updated_at: string | Date;
 };
 
 type TripEntryRow = {
   id: string;
   trip_id: string;
-  entry_date: string;
+  entry_date: string | Date;
   title: string;
   content: string;
   image_url: string | null;
   mood_tag: string | null;
-  created_at: string;
-  updated_at: string;
+  created_at: string | Date;
+  updated_at: string | Date;
 };
+
+function formatDateOnly(value: string | Date): string {
+  if (value instanceof Date) {
+    return value.toISOString().slice(0, 10);
+  }
+
+  return String(value);
+}
+
+function formatDateTime(value: string | Date): string {
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  return String(value);
+}
 
 function mapOrder(row: OrderRow): OrderWithTrip {
   return {
@@ -58,8 +74,8 @@ function mapOrder(row: OrderRow): OrderWithTrip {
     theme: row.theme,
     includeScope: row.include_scope,
     status: row.status,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    createdAt: formatDateTime(row.created_at),
+    updatedAt: formatDateTime(row.updated_at),
     trip: {
       id: row.trip_id,
       title: row.trip_title,
@@ -72,17 +88,19 @@ function mapEntry(row: TripEntryRow): TripEntry {
   return {
     id: row.id,
     tripId: row.trip_id,
-    entryDate: row.entry_date,
+    entryDate: formatDateOnly(row.entry_date),
     title: row.title,
     content: row.content,
     imageUrl: row.image_url,
     moodTag: row.mood_tag,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    createdAt: formatDateTime(row.created_at),
+    updatedAt: formatDateTime(row.updated_at),
   };
 }
 
 export async function getOrders(): Promise<OrderWithTrip[]> {
+  const db = getDb();
+
   const result = await db.query<OrderRow>(
     `
     select
@@ -107,6 +125,8 @@ export async function getOrders(): Promise<OrderWithTrip[]> {
 }
 
 export async function getOrderById(orderId: string): Promise<OrderWithTrip | null> {
+  const db = getDb();
+
   const result = await db.query<OrderRow>(
     `
     select
@@ -137,6 +157,8 @@ export async function getOrderById(orderId: string): Promise<OrderWithTrip | nul
 }
 
 export async function getOrderExportData(orderId: string) {
+  const db = getDb();
+
   const orderResult = await db.query<OrderExportRow>(
     `
     select
@@ -194,19 +216,19 @@ export async function getOrderExportData(orderId: string) {
       theme: orderRow.theme,
       includeScope: orderRow.include_scope,
       status: orderRow.status,
-      createdAt: orderRow.created_at,
-      updatedAt: orderRow.updated_at,
+      createdAt: formatDateTime(orderRow.created_at),
+      updatedAt: formatDateTime(orderRow.updated_at),
     },
     trip: {
       id: orderRow.trip_real_id,
       title: orderRow.trip_title,
       destination: orderRow.trip_destination,
-      startDate: orderRow.start_date,
-      endDate: orderRow.end_date,
+      startDate: formatDateOnly(orderRow.start_date),
+      endDate: formatDateOnly(orderRow.end_date),
       description: orderRow.description,
       coverImageUrl: orderRow.cover_image_url,
-      createdAt: orderRow.trip_created_at,
-      updatedAt: orderRow.trip_updated_at,
+      createdAt: formatDateTime(orderRow.trip_created_at),
+      updatedAt: formatDateTime(orderRow.trip_updated_at),
     },
     entries,
     meta: {

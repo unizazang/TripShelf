@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 
 const allowedStatuses = ["pending", "processing", "completed"] as const;
 
@@ -8,6 +8,8 @@ type RouteContext = {
 };
 
 export async function PATCH(request: Request, { params }: RouteContext) {
+
+  const db = getDb();
   try {
     const { id } = await params;
     const body = await request.json();

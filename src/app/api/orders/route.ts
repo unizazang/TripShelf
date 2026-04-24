@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 
 const allowedThemes = ["basic", "photo", "diary"] as const;
 
 export async function POST(request: Request) {
+
+  const db = getDb();
   try {
     const body = await request.json();
 

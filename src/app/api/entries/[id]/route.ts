@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -36,6 +36,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
         { status: 400 }
       );
     }
+
+    const db = getDb();
 
     const result = await db.query(
       `
@@ -74,6 +76,8 @@ export async function PATCH(request: Request, { params }: RouteContext) {
 export async function DELETE(_request: Request, { params }: RouteContext) {
   try {
     const { id } = await params;
+
+    const db = getDb();
 
     const result = await db.query(
       `

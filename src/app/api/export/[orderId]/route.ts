@@ -1,10 +1,14 @@
 import { getOrderExportData } from "@/services/orders";
+import { getDb } from "@/lib/db";
+
 
 type RouteContext = {
   params: Promise<{ orderId: string }>;
 };
 
 export async function GET(_request: Request, { params }: RouteContext) {
+
+  const db = getDb();
   const { orderId } = await params;
 
   const exportData = await getOrderExportData(orderId);
