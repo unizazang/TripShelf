@@ -3,9 +3,9 @@ services:
     image: postgres:16
     container_name: trip-shelf-db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-trip_shelf}
+      POSTGRES_USER: ${POSTGRES_USER:-trip_shelf_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trip_shelf_password}
     ports:
       - "5432:5432"
     volumes:
@@ -23,7 +23,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL:-postgres://trip_shelf_user:trip_shelf_password@db:5432/trip_shelf}
     ports:
       - "${APP_PORT:-3000}:3000"
     restart: unless-stopped
